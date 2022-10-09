@@ -6,6 +6,9 @@
         <el-form-item prop="name" label="文件名">
           <el-input v-model="searchForm.name" placeholder="请输入文件名" />
         </el-form-item>
+        <el-form-item prop="name" label="文件上传人">
+          <el-input v-model="searchForm.uploader" placeholder="请输入上传人" />
+        </el-form-item>
           <el-form-item prop="name" label="日期">
             <el-date-picker
               v-model="dateArr"
@@ -102,7 +105,8 @@ export default {
       loading: true,
       fileList: [],
       searchForm: {
-        name: ''
+        name: '',
+        uploader:''
       },
       count:0,
       current:1,
