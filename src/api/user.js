@@ -19,7 +19,16 @@ export default {
   deleteUser(id) {
     return fetch('delete', id)
   },
-  resetPassword(data){
-    return fetch('resetPassword',data)
+  resetPassword(data) {
+    return fetch('resetPassword', data)
+  },
+  updateUserName(data) {
+    return fetch('updateUserName', data)
+  },
+  getUserInfoById() {
+    return fetch('getUserInfoById', '', 'get')
+  },
+  sendVerifyCode(data) {
+    return fetch('sendVerifyCode', data)
   }
 }

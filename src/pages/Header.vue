@@ -11,35 +11,48 @@
               mode="horizontal"
               @select="handleSelect"
             >
-              <el-menu-item index="index"><i class="el-icon-folder-opened"></i>我的文件</el-menu-item>
-              <el-menu-item index="myshare"><i class="el-icon-share"></i>我的分享</el-menu-item>
-              <el-menu-item v-if="isAdmin" index="user"><i class="el-icon-user-solid"></i>用户管理</el-menu-item>
-              <el-menu-item v-if="isAdmin" index="files"><i class="el-icon-folder-checked"></i>文件管理</el-menu-item>
-              <el-menu-item index="recycle"><i class="el-icon-refresh"></i>回收站</el-menu-item>
+              <el-menu-item index="index"
+                ><i class="el-icon-folder-opened"></i>我的文件</el-menu-item
+              >
+              <el-menu-item index="myshare"
+                ><i class="el-icon-share"></i>我的分享</el-menu-item
+              >
+              <el-menu-item v-if="isAdmin" index="user"
+                ><i class="el-icon-user-solid"></i>用户管理</el-menu-item
+              >
+              <el-menu-item v-if="isAdmin" index="files"
+                ><i class="el-icon-folder-checked"></i>文件管理</el-menu-item
+              >
+              <el-menu-item index="recycle"
+                ><i class="el-icon-refresh"></i>回收站</el-menu-item
+              >
             </el-menu>
           </el-col>
           <el-col :span="8" style="text-align:right;">
             <div style="display: flex; justify-content: right">
-              <!-- <el-link type="info" href="https://aliyunvi.com/filehash" target="_blank">第三方文件hash值查询</el-link> -->
-              <el-button
-                type="info"
-                size="small"
-                style="margin-right: 20px"
-                icon="el-icon-setting"
-                @click="updateClick"
-                >修改密码</el-button
-              >
-              <el-tag style="margin-right: 20px"
-                ><i class="el-icon-user" style="margin-right: 5px"></i
-                >{{ userInfo.name }}
-              </el-tag>
-              <el-button
-                type="danger"
-                size="small"
-                icon="el-icon-close"
-                @click="quitUser"
-                >退出</el-button
-              >
+              <el-avatar style="margin-right: 15px">{{
+                userInfos.name
+              }}</el-avatar>
+              <el-dropdown @command="handleCommand">
+                <el-button type="info">
+                  <i class="el-icon-setting" style="margin-right: 5px"></i
+                  >设置<i class="el-icon-arrow-down el-icon--right"></i>
+                </el-button>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item command="updateClick" @click="updateClick"
+                    ><i class="el-icon-user" style="margin-right: 5px"></i
+                    >修改密码</el-dropdown-item
+                  >
+                  <el-dropdown-item command="updateUserNameClick"
+                    ><i class="el-icon-edit" style="margin-right: 5px"></i
+                    >修改用户名</el-dropdown-item
+                  >
+                  <el-dropdown-item command="quitUser"
+                    ><i class="el-icon-close" style="margin-right: 5px"></i
+                    >退出登录</el-dropdown-item
+                  >
+                </el-dropdown-menu>
+              </el-dropdown>
             </div>
           </el-col>
         </el-row>
@@ -91,10 +104,48 @@
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
-          <el-button type="primary" size="mini" :loading="isLoading" @click="resetPassword"
+          <el-button
+            type="primary"
+            size="mini"
+            :loading="isLoading"
+            @click="resetPassword"
             >确认</el-button
           >
-          <el-button size="mini" @click="visible = false">取 消</el-button>
+          <el-button size="mini" @click="close">取 消</el-button>
+        </span>
+      </el-dialog>
+      <el-dialog
+        :visible.sync="userNameFromVisible"
+        center
+        title="修改用户名"
+        width="645px"
+        @close="close"
+      >
+        <el-form
+          ref="userNameFrom"
+          :model="userNameFrom"
+          :rules="userNameRules"
+          label-width="100px"
+          size="mini"
+        >
+          <el-form-item label="用户名：" prop="name">
+            <el-input
+              v-model="userNameFrom.name"
+              style="width:70%;"
+              placeholder="请输入"
+              autocomplete="off"
+            />
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button
+            type="primary"
+            size="mini"
+            :loading="isLoading"
+            @click="updateUserName"
+            >确认</el-button
+          >
+          <el-button size="mini" @click="close">取 消</el-button>
         </span>
       </el-dialog>
     </el-container>
@@ -102,6 +153,7 @@
 </template>
 
 <script>
+import { Message } from "element-ui";
 import { mapGetters } from "vuex";
 import userApi from "../api/user";
 import md5 from "md5";
@@ -117,7 +169,8 @@ export default {
       }
     };
     return {
-      isLoading:false,
+      userInfos: {},
+      isLoading: false,
       activeIndex: "index",
       visible: false,
       loginForm: {},
@@ -134,6 +187,16 @@ export default {
           { required: true, message: "请输入新密码", trigger: "blur" }
         ],
         rePassword: [{ validator: rePasswordValidator, trigger: "blur" }]
+      },
+      userNameFromVisible: false,
+      userNameFrom: {
+        name: ""
+      },
+      userNameRules: {
+        name: [
+          { required: true, message: "用户名不能为空", trigger: "blur" },
+          { min: 4, message: "用户名长度不能少于4位", trigger: "blur" }
+        ]
       }
     };
   },
@@ -146,9 +209,46 @@ export default {
   mounted() {
     const route = this.$route.path.split("/")[2];
     this.handleSelect(route);
-    console.log(this.userInfo.role);
+  },
+  created() {
+    this.getUserInfo();
   },
   methods: {
+    handleCommand(command) {
+      if (command == "updateClick") {
+        this.updateClick();
+      }
+      if (command == "quitUser") {
+        this.quitUser();
+      }
+      if (command == "updateUserNameClick") {
+        this.updateUserNameClick();
+      }
+    },
+    updateUserNameClick() {
+      this.userNameFromVisible = true;
+    },
+    updateUserName() {
+      this.$refs["userNameFrom"].validate(async valid => {
+        if (valid) {
+          userApi
+            .updateUserName({ ...this.userNameFrom, id: this.userInfos.id })
+            .then(res => {
+              this.$message1000("用户名已修改");
+              this.userNameFromVisible = false;
+              this.getUserInfo();
+            })
+            .catch(() => {});
+        }
+      });
+    },
+    getUserInfo() {
+      userApi.getUserInfoById().then(res => {
+        this.userInfos = res;
+        this.userNameFrom.name = res.name;
+        console.log(this.userInfos);
+      });
+    },
     resetPassword() {
       this.$refs["resetPasswordFrom"].validate(async valid => {
         if (valid) {
@@ -159,7 +259,7 @@ export default {
             newPassword: md5(newPassword),
             ...this.userInfo
           };
-          this.isLoading = true
+          this.isLoading = true;
           userApi
             .resetPassword(params)
             .then(res => {
@@ -169,7 +269,7 @@ export default {
                 this.$store.commit("quitUserInfo");
                 this.$router.push("/login");
               }
-              this.isLoading = false
+              this.isLoading = false;
             })
             .finally(() => {
               this.visible = false;
@@ -178,7 +278,7 @@ export default {
                 newPassword: "",
                 rePassword: ""
               };
-              this.isLoading = false
+              this.isLoading = false;
               this.$refs["resetPasswordFrom"].clearValidate();
             });
         }
@@ -190,6 +290,10 @@ export default {
         password: "",
         newPassword: "",
         rePassword: ""
+      };
+      this.userNameFromVisible = false;
+      this.userNameFrom = {
+        name: ""
       };
       this.$refs["resetPasswordFrom"].clearValidate();
     },

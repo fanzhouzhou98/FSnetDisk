@@ -125,7 +125,6 @@ export default {
             name,
             password: md5(password)
           }).then(res => {
-            console.log(res)
             this.$store.commit('addUserInfo', res)
             this.$store.commit('addToken',res.token)
             this.$router.push('/netdisk')
