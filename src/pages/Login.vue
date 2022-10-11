@@ -57,6 +57,7 @@
                 <el-input
                   v-model="loginForm.identifyCode"
                   type="input"
+                  maxlength="4"
                   placeholder="请输入"
                   style="width:95%"
                 />
@@ -105,7 +106,7 @@ export default {
     let identifyValidator = (rule, value, callback) => {
       if (value === "" || value === null) {
         callback(new Error("请输入验证码"));
-      } else if (value != this.identifyCode) {
+      } else if (value.toUpperCase() != this.identifyCode.toUpperCase()) {
         callback(new Error("验证码输入错误"));
       } else {
         callback();
@@ -125,12 +126,15 @@ export default {
         password: [
           { required: true, message: "密码不能为空", trigger: "blur" }
         ],
-        identifyCode: [{ validator: identifyValidator, trigger: "blur" }]
+        identifyCode: [
+          { required: true, validator: identifyValidator, trigger: "blur" }
+        ]
       },
       // 图片验证码
       identifyCode: "",
       // 验证码规则
-      identifyCodes: "3456789ABCDEFGHGKMNPQRSTUVWXY"
+      identifyCodes:
+        "1234567890ABCDEFGHGKMNPQRSTUVWXYabcdefghijklmnopqrstuvwxyz"
     };
   },
   created() {
@@ -157,7 +161,6 @@ export default {
     makeCode(o, l) {
       for (let i = 0; i < l; i++) {
         let randomIndex = Math.floor(Math.random() * (o.length - 0) + 0);
-        console.log(randomIndex);
         this.identifyCode = this.identifyCode + this.identifyCodes[randomIndex];
       }
     },
