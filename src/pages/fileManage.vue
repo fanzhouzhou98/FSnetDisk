@@ -28,7 +28,6 @@
             >查询</el-button
           >
           <el-button type="info" @click="resetForm">清空</el-button>
-          <el-button type="info" @click="sendVerifyCode">发送验证码</el-button>
         </el-form-item>
       </el-form>
       <div v-loading="loading" class="wait" style="height:calc(100% - 30%);">
@@ -160,9 +159,6 @@ export default {
     this.getFileList();
   },
   methods: {
-    sendVerifyCode() {
-      UserApi.sendVerifyCode({ email: "fanzz1802@163.com" });
-    },
     getDayStartOrEnd(time) {
       //end  返回毫秒数
       return new Date(time).setHours(23, 59, 59, 999);

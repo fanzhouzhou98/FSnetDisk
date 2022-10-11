@@ -5,62 +5,101 @@
         <span>登录页面</span>
       </div>
       <div class="text item">
-        <el-form ref="loginForm" :model="loginForm" :rules="rules">
+        <el-form
+          ref="loginForm"
+          :model="loginForm"
+          :rules="rules"
+          label-width="80px"
+        >
           <el-row>
-  <el-form-item label="用户名" prop="name">
-            <el-input v-model="loginForm.name" placeholder="请输入用户名" />
-          </el-form-item>
+            <el-form-item label="用户名" prop="name">
+              <el-input
+                v-model="loginForm.name"
+                placeholder="请输入用户名"
+                style="width:75%"
+              />
+            </el-form-item>
           </el-row>
-        <el-row>
-<el-form-item label="密码" prop="password">
-            <el-input
-              v-model="loginForm.password"
-              type="password"
-              placeholder="请输入密码"
-              autocomplete="off"
-              show-password
-            />
-          </el-form-item>
-        </el-row>
           <el-row>
-          
-<el-form-item label="验证码" prop="identifyCode">
-    <el-col :span="10">
-            <el-input
-              v-model="loginForm.identifyCode"
-              type="input"
-              placeholder="请输入"
-              style="width:95%"
-            />
-             </el-col>
+            <el-form-item label="密码" prop="password">
+              <el-input
+                v-model="loginForm.password"
+                type="password"
+                placeholder="请输入密码"
+                autocomplete="off"
+                show-password
+                style="width:75%"
+              />
+              <el-popover
+                trigger="hover"
+                placement="right"
+                width="160"
+                v-model="popoverVisible"
+                v-if="loginForm.name"
+              >
+                <p>忘记密码？</p>
+                <div style="text-align: right; margin: 0">
+                  <el-button type="primary" size="mini" @click="goToResetPage"
+                    >确定</el-button
+                  >
+                </div>
+                <i
+                  class="el-icon-question"
+                  slot="reference"
+                  style="font-size:24px;margin-left:20px"
+                ></i>
+              </el-popover>
+            </el-form-item>
+          </el-row>
+          <el-row>
+            <el-form-item label="验证码" prop="identifyCode">
+              <el-col :span="10">
+                <el-input
+                  v-model="loginForm.identifyCode"
+                  type="input"
+                  placeholder="请输入"
+                  style="width:95%"
+                />
+              </el-col>
               <el-col :span="8">
-<div @click="refreshCode" style="cursor: pointer;width:80px;height:40px;display:inline-block;">
-            <s-identify :identifyCode="identifyCode" style="cursor: pointer;width:80px;height:40px;display:inline-block;"></s-identify>
-            </div>
-            </el-col>
-             </el-form-item>
+                <div
+                  @click="refreshCode"
+                  style="cursor: pointer;width:80px;height:40px;display:inline-block;"
+                >
+                  <s-identify
+                    :identifyCode="identifyCode"
+                    style="cursor: pointer;width:80px;height:40px;display:inline-block;"
+                  ></s-identify>
+                </div>
+              </el-col>
+            </el-form-item>
           </el-row>
-          <el-form-item>
-            <el-button style="width:100%" type="primary" :loading="submitLoading" @click="submit('loginForm')">登录</el-button>
-          </el-form-item>
-          <el-form-item>
-            <el-button style="width:100%" @click="$router.push('/register')">注册</el-button>
-          </el-form-item>
         </el-form>
+        <el-row>
+          <el-col style="text-align:center;height:50px">
+            <el-button
+              type="primary"
+              :loading="submitLoading"
+              @click="submit('loginForm')"
+              >登录</el-button
+            >
+            <el-button @click="$router.push('/register')">注册</el-button>
+          </el-col>
+        </el-row>
       </div>
     </el-card>
   </div>
 </template>
 
 <script>
-import SIdentify from '../component/identify.vue'
-import userApi from '../api/user'
-import md5 from 'md5'
+import SIdentify from "../component/identify.vue";
+import userApi from "../api/user";
+import md5 from "md5";
 export default {
   components: { SIdentify },
-  name: 'Login',
+  name: "Login",
   data() {
-     let identifyValidator = (rule, value, callback) => {
+    let identifyValidator = (rule, value, callback) => {
       if (value === "" || value === null) {
         callback(new Error("请输入验证码"));
       } else if (value != this.identifyCode) {
@@ -70,77 +109,85 @@ export default {
       }
     };
     return {
+      popoverVisible: false,
       loading: false,
       loginForm: {
-        name: '',
-        password: '',
-        identifyCode: '',
+        name: "",
+        password: "",
+        identifyCode: ""
       },
       submitLoading: false,
       rules: {
-        name: [
-          { required: true, message: '用户名不能为空', trigger: 'blur' }
-        ],
+        name: [{ required: true, message: "用户名不能为空", trigger: "blur" }],
         password: [
-          { required: true, message: '密码不能为空', trigger: 'blur' }
+          { required: true, message: "密码不能为空", trigger: "blur" }
         ],
-        identifyCode:[
-          { validator: identifyValidator, trigger: "blur"}
-        ]
+        identifyCode: [{ validator: identifyValidator, trigger: "blur" }]
       },
       // 图片验证码
-   identifyCode: '',
-   // 验证码规则
-   identifyCodes: '3456789ABCDEFGHGKMNPQRSTUVWXY',
-    }
+      identifyCode: "",
+      // 验证码规则
+      identifyCodes: "3456789ABCDEFGHGKMNPQRSTUVWXY"
+    };
   },
   created() {
-   this.identifyCode = ''
-   this.makeCode(this.identifyCodes, 4)
+    this.identifyCode = "";
+    this.makeCode(this.identifyCodes, 4);
   },
   methods: {
-
- // 切换验证码
-     refreshCode() {
-   this.identifyCode = ''
-   this.makeCode(this.identifyCodes, 4)
-   console.log(1,this.identifyCode)
-     },
-  // 生成随机验证码
-  makeCode(o, l) {
-    for (let i = 0; i<l; i++) {
-      let randomIndex = Math.floor(Math.random() * (o.length - 0) + 0)
-      console.log(randomIndex)
-      this.identifyCode = this.identifyCode+this.identifyCodes[randomIndex]
-    }
-  },
+    goToResetPage() {
+      this.popoverVisible = false;
+      this.$router.push({
+        path: "/resetPassword",
+        query: {
+          username: this.loginForm.name
+        }
+      });
+    },
+    // 切换验证码
+    refreshCode() {
+      this.identifyCode = "";
+      this.makeCode(this.identifyCodes, 4);
+      console.log(1, this.identifyCode);
+    },
+    // 生成随机验证码
+    makeCode(o, l) {
+      for (let i = 0; i < l; i++) {
+        let randomIndex = Math.floor(Math.random() * (o.length - 0) + 0);
+        console.log(randomIndex);
+        this.identifyCode = this.identifyCode + this.identifyCodes[randomIndex];
+      }
+    },
 
     submit(formName) {
-      this.submitLoading = true
+      this.submitLoading = true;
       this.$refs[formName].validate(valid => {
         if (valid) {
-          this.loading = true
-          const { name, password } = this.loginForm
-          userApi.login({
-            name,
-            password: md5(password)
-          }).then(res => {
-            this.$store.commit('addUserInfo', res)
-            this.$store.commit('addToken',res.token)
-            this.$router.push('/netdisk')
-          }).finally(() => {
-            this.loading = false
-            this.submitLoading = false
-          })
+          this.loading = true;
+          const { name, password } = this.loginForm;
+          userApi
+            .login({
+              name,
+              password: md5(password)
+            })
+            .then(res => {
+              this.$store.commit("addUserInfo", res);
+              this.$store.commit("addToken", res.token);
+              this.$router.push("/netdisk");
+            })
+            .finally(() => {
+              this.loading = false;
+              this.submitLoading = false;
+            });
         } else {
-          console.log('error submit!!')
-          this.submitLoading = false
-          return false
+          console.log("error submit!!");
+          this.submitLoading = false;
+          return false;
         }
-      })
+      });
     }
   }
-}
+};
 </script>
 
 <style scoped>
@@ -157,7 +204,7 @@ body {
 }
 .box-card {
   max-width: 100%;
-  min-width: 23rem;
+  min-width: 30rem;
   margin: 5% auto;
 }
 </style>

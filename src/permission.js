@@ -5,24 +5,24 @@ import 'nprogress/nprogress.css' // progress bar style
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
-const whiteList = ['/login', '/register'] // no redirect whitelist
+const whiteList = ['/login', '/register', '/resetPassword'] // no redirect whitelist
 const shareFileRoute = '/s/'
-
-router.beforeEach(async(to, from, next) => {
+// const resetPasswordRoute = '/resetPassword'
+router.beforeEach(async (to, from, next) => {
   NProgress.start()
   setTimeout(() => {
-  const hasToken = store.getters.token
-  console.log(hasToken)
-  if (to.meta.title) {
-    document.title = to.meta.title
-  }
-  if (!whiteList.includes(to.path) && !to.path.includes(shareFileRoute)&&hasToken=='') {
-    next('/login')
-    NProgress.done()
-  } else {
-    next()
-  }
-})
+    const hasToken = store.getters.token
+    console.log(hasToken)
+    if (to.meta.title) {
+      document.title = to.meta.title
+    }
+    if (!whiteList.includes(to.path) && !to.path.includes(shareFileRoute) && hasToken == '') {
+      next('/login')
+      NProgress.done()
+    } else {
+      next()
+    }
+  })
 })
 router.afterEach(() => {
   // finish progress bar

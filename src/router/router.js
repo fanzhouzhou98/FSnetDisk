@@ -4,13 +4,14 @@ import store from '../vuex/store'
 
 const login = () => import('../pages/Login.vue')
 const register = () => import('../pages/Register.vue')
+const resetPassword = () => import('../pages/ResetPassword.vue')
 const header = () => import('../pages/Header.vue')
 const content = () => import('../pages/Content.vue')
 const myshare = () => import('../pages/Myshare.vue')
 const fileManage = () => import('../pages/fileManage.vue')
 const userManage = () => import('../pages/userManage.vue')
 const shareview = () => import('../pages/Shareview.vue')
-const recycleCenter = ()=>import('../pages/RecycleCenter.vue')
+const recycleCenter = () => import('../pages/RecycleCenter.vue')
 const notFound = () => import('../pages/404.vue')
 Vue.use(VueRouter)
 const router = new VueRouter({
@@ -24,6 +25,9 @@ const router = new VueRouter({
     },
     {
       path: '/register', component: register, meta: { title: 'FSnetDisk-注册页面' }
+    },
+    {
+      path: '/resetPassword', component: resetPassword, meta: { title: 'FSnetDisk-重置密码' }
     },
     {
       path: '/netdisk',

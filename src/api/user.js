@@ -30,5 +30,11 @@ export default {
   },
   sendVerifyCode(data) {
     return fetch('sendVerifyCode', data)
-  }
+  },
+  getUserEmailByName(data) {
+    return fetch('getUserEmailByName', data)
+  },
+  resetPasswordByCode(data) {
+    return fetch('resetPasswordByCode', data)
+  },
 }
