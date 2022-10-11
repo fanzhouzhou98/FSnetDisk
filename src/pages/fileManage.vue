@@ -29,6 +29,21 @@
           >
           <el-button type="info" @click="resetForm">清空</el-button>
         </el-form-item>
+        <el-button
+          @click="diskInfoClick"
+          type="primary"
+          style="margin-left: 16px; float:right"
+          size="mini"
+        >
+          磁盘信息
+        </el-button>
+
+        <el-drawer title="磁盘信息" :visible.sync="drawer" :with-header="true">
+          <div
+            id="myCharts"
+            style="width: 100%;height:400px;margin:0 auto"
+          ></div>
+        </el-drawer>
       </el-form>
       <div v-loading="loading" class="wait" style="height:calc(100% - 30%);">
         <div class="displayContent">
@@ -126,10 +141,13 @@
 import fileApi from "../api/file";
 import UserApi from "../api/user";
 import axios from "axios";
+import * as echarts from "echarts";
 export default {
   name: "Myshare",
   data() {
     return {
+      drawer: false,
+      diskInfo: {},
       downLoading: false,
       deleLoading: false,
       pickerOptions: {
@@ -157,8 +175,67 @@ export default {
   created() {
     this.loading = true;
     this.getFileList();
+    this.getDiskInfo();
   },
+  mounted() {},
   methods: {
+    diskInfoClick() {
+      this.getDiskInfo();
+      this.drawer = true;
+      this.$nextTick(() => {
+        // 接下来的使用就跟之前一样，初始化图表，设置配置项
+        var myChart = echarts.init(document.getElementById("myCharts"));
+        myChart.setOption({
+          title: {
+            text: `程序运行磁盘${this.diskInfo.mounted}`,
+            subtext: `单位:GB----使用率:${this.diskInfo.capacity}`,
+            left: "center"
+          },
+          tooltip: {
+            trigger: "item"
+          },
+          legend: {
+            top: "5%",
+            left: "5%",
+            orient: "vertical"
+          },
+          series: [
+            {
+              name: ``,
+              type: "pie",
+              radius: ["40%", "70%"],
+              avoidLabelOverlap: false,
+              label: {
+                show: false,
+                position: "center"
+              },
+              emphasis: {
+                label: {
+                  show: true,
+                  fontSize: "28",
+                  fontWeight: "bold"
+                }
+              },
+              labelLine: {
+                show: false
+              },
+              data: [
+                { value: this.diskInfo.total, name: "磁盘总容量" },
+                { value: this.diskInfo.available, name: "可用容量" },
+                { value: this.diskInfo.used, name: "已用容量" }
+              ]
+            }
+          ]
+        });
+      });
+    },
+    async getDiskInfo() {
+      let data = await fileApi.getDiskInfo().catch(() => {});
+      if (data) {
+        this.diskInfo = data;
+        console.log(this.diskInfo);
+      }
+    },
     getDayStartOrEnd(time) {
       //end  返回毫秒数
       return new Date(time).setHours(23, 59, 59, 999);

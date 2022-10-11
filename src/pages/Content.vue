@@ -4,33 +4,30 @@
     justify="center"
   >
     <!-- 上传 搜索 新建文件 -->
-    <el-row  class="row-bg">
+    <el-row class="row-bg">
       <el-col :span="3"
         ><el-button
           type="primary"
           icon="el-icon-upload"
           size="mini"
           @click="openUpload"
-          >上传</el-button>
+          >上传</el-button
+        >
         <el-button
           type="success"
           icon="el-icon-refresh-left"
           size="mini"
           @click="getUserFile(true)"
           >刷新</el-button
-        ></el-col>
-        <el-form
-          ref="searchForm"
-          :model="searchForm"
-          :inline="true"
-          size="mini"
-        >
-         <el-col :span="4">
+        ></el-col
+      >
+      <el-form ref="searchForm" :model="searchForm" :inline="true" size="mini">
+        <el-col :span="4">
           <el-form-item prop="name" label="文件名">
             <el-input v-model="searchForm.name" placeholder="请输入文件名" />
           </el-form-item>
-         </el-col>
-         <el-col :span="8">
+        </el-col>
+        <el-col :span="8">
           <el-form-item prop="name" label="日期">
             <el-date-picker
               v-model="dateArr"
@@ -44,8 +41,8 @@
             >
             </el-date-picker>
           </el-form-item>
-         </el-col>
-         <el-col :span="4">
+        </el-col>
+        <el-col :span="4">
           <el-form-item>
             <el-button
               type="primary"
@@ -55,9 +52,8 @@
             >
             <el-button type="info" @click="resetForm">清空</el-button>
           </el-form-item>
-          </el-col
-      >
-        </el-form>
+        </el-col>
+      </el-form>
     </el-row>
     <el-dialog
       :visible.sync="visible"
@@ -193,18 +189,18 @@
             </template>
           </el-table-column>
         </el-table>
-        <el-pagination
-          style="float:right;margin-top:20px"
-          @current-change="handleCurrentChange"
-          :current-page.sync="current"
-          :page-size="size"
-          background
-          layout="total,  prev, pager, next"
-          :total="count"
-        >
-        </el-pagination>
       </div>
     </div>
+    <el-pagination
+      style="float:right;margin-top:20px"
+      @current-change="handleCurrentChange"
+      :current-page.sync="current"
+      :page-size="size"
+      background
+      layout="total,  prev, pager, next"
+      :total="count"
+    >
+    </el-pagination>
   </el-main>
 </template>
 
@@ -218,14 +214,14 @@ export default {
   name: "NetdiskContent",
   data() {
     return {
-      downLoading:false,
-      deleLoading:false,
+      downLoading: false,
+      deleLoading: false,
       pickerOptions: {
         //配置项
         // 设置禁用状态  time是日历上的每一个时间
         disabledDate: time => {
           // 如果没有选择日期，就要限制不能选择今天及以后
-          return time.getTime() >= this.getDayStartOrEnd(new Date())
+          return time.getTime() >= this.getDayStartOrEnd(new Date());
         }
       },
       dateArr: [this.getBeforeDate(new Date(), 30), new Date()],
@@ -279,10 +275,10 @@ export default {
       this.getUserFile();
     },
     resetForm() {
-     this.dateArr = [this.getBeforeDate(new Date(), 30), new Date()]
+      this.dateArr = [this.getBeforeDate(new Date(), 30), new Date()];
       this.searchForm = {
-        name:''
-      }
+        name: ""
+      };
     },
     searchFileByName(isRefresh) {
       this.current = 1;
@@ -335,7 +331,7 @@ export default {
     },
 
     fullDownloadUrl(row) {
-      this.downLoading = true
+      this.downLoading = true;
       axios({
         url: "/api/" + row.path,
         method: "get",
@@ -348,9 +344,9 @@ export default {
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-        this.downLoading = false
+        this.downLoading = false;
       });
-      this.downLoading = false
+      this.downLoading = false;
     },
     fileDelete(row) {
       this.$confirm(`此操作将删除【${row.name}】文件, 是否继续?`, "提示", {
@@ -359,13 +355,13 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.deleLoading = true
+          this.deleLoading = true;
           fileApi.deleteFile({ id: row.id }).then(res => {
             this.getUserFile();
             this.$message1000("删除成功");
-            this.deleLoading = false
+            this.deleLoading = false;
           });
-          this.deleLoading = false
+          this.deleLoading = false;
         })
         .catch(() => {
           this.$message({

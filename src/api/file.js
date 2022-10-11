@@ -27,5 +27,8 @@ export default {
   },
   realDeleteFile(id) {
     return fetch('deleteFile', id)
-  }
+  },
+  getDiskInfo(id) {
+    return fetch('getDiskInfo', '', 'get')
+  },
 }
