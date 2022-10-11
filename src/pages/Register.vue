@@ -64,6 +64,7 @@
                 <el-input
                   v-model="registerForm.identifyCode"
                   type="input"
+                  maxlength="4"
                   placeholder="请输入"
                   style="width:95%"
                 />
@@ -86,7 +87,7 @@
               style="width:30%;"
               type="primary"
               @click="submitForm('registerForm')"
-              >注册</el-button
+              >确认注册</el-button
             >
           </el-col>
         </el-row>

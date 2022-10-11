@@ -80,6 +80,7 @@
           <el-col style="text-align:center;height:50px">
             <el-button
               type="primary"
+              maxlength="4"
               :loading="submitLoading"
               @click="submit('resetForm')"
               >重置密码</el-button
@@ -131,8 +132,12 @@ export default {
         newPassword: [
           { required: true, message: "密码不能为空", trigger: "blur" }
         ],
-        rePassword: [{ validator: rePasswordValidator, trigger: "blur" }],
-        identifyCode: [{ validator: identifyValidator, trigger: "blur" }]
+        rePassword: [
+          { required: true, validator: rePasswordValidator, trigger: "blur" }
+        ],
+        identifyCode: [
+          { required: true, validator: identifyValidator, trigger: "blur" }
+        ]
       }
     };
   },

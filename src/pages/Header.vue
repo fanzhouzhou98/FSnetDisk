@@ -186,7 +186,9 @@ export default {
         newPassword: [
           { required: true, message: "请输入新密码", trigger: "blur" }
         ],
-        rePassword: [{ validator: rePasswordValidator, trigger: "blur" }]
+        rePassword: [
+          { required: true, validator: rePasswordValidator, trigger: "blur" }
+        ]
       },
       userNameFromVisible: false,
       userNameFrom: {
