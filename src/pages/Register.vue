@@ -19,9 +19,26 @@
         </el-row>
       </div>
       <div class="text item">
-        <el-form ref="registerForm" :model="registerForm" status-icon :rules="rules">
+        <el-form
+          ref="registerForm"
+          :model="registerForm"
+          status-icon
+          :rules="rules"
+          label-width="80px"
+        >
+          <el-form-item label="email" prop="email">
+            <el-input
+              v-model="registerForm.email"
+              placeholder="请输入你的邮箱"
+              style="width:80%"
+            />
+          </el-form-item>
           <el-form-item label="用户名" prop="name">
-            <el-input v-model="registerForm.name" placeholder="请输入用户名" />
+            <el-input
+              v-model="registerForm.name"
+              placeholder="请输入用户名"
+              style="width:80%"
+            />
           </el-form-item>
           <el-form-item label="密码" prop="password">
             <el-input
@@ -29,6 +46,7 @@
               type="password"
               placeholder="请输入密码"
               autocomplete="off"
+              style="width:80%"
             />
           </el-form-item>
           <el-form-item label="确认密码" prop="checkPassword">
@@ -37,138 +55,171 @@
               type="password"
               placeholder="请再次输入密码"
               autocomplete="off"
+              style="width:80%"
             />
           </el-form-item>
- <el-row>
-          
-<el-form-item label="验证码" prop="identifyCode">
-    <el-col :span="10">
-            <el-input
-              v-model="registerForm.identifyCode"
-              type="input"
-              placeholder="请输入"
-              style="width:95%"
-            />
-             </el-col>
+          <el-row>
+            <el-form-item label="验证码" prop="identifyCode">
+              <el-col :span="10">
+                <el-input
+                  v-model="registerForm.identifyCode"
+                  type="input"
+                  placeholder="请输入"
+                  style="width:95%"
+                />
+              </el-col>
               <el-col :span="8">
-<div @click="refreshCode" style="cursor: pointer;width:80px;height:40px;display:inline-block;">
-            <s-identify :identifyCode="identifyCode" style="cursor: pointer;width:80px;height:40px;display:inline-block;"></s-identify>
-            </div>
-            </el-col>
-             </el-form-item>
+                <el-button
+                  type="info"
+                  :loading="codeLoading"
+                  :disabled="isDisabled"
+                  @click="sendVerifyCode"
+                  >{{ info }}</el-button
+                >
+              </el-col>
+            </el-form-item>
           </el-row>
-          <el-form-item>
-            <el-button style="width:100%" type="primary" @click="submitForm('registerForm')">注册</el-button>
-          </el-form-item>
         </el-form>
+        <el-row>
+          <el-col style="text-align:center;height:50px">
+            <el-button
+              style="width:30%;"
+              type="primary"
+              @click="submitForm('registerForm')"
+              >注册</el-button
+            >
+          </el-col>
+        </el-row>
       </div>
     </el-card>
   </div>
 </template>
 
 <script>
-import SIdentify from '../component/identify.vue'
-import userApi from '../api/user'
-import md5 from 'md5'
+import SIdentify from "../component/identify.vue";
+import userApi from "../api/user";
+import md5 from "md5";
 export default {
   components: { SIdentify },
-  name: 'Register',
+  name: "Register",
   data() {
-      let identifyValidator = (rule, value, callback) => {
+    let identifyValidator = (rule, value, callback) => {
       if (value === "" || value === null) {
         callback(new Error("请输入验证码"));
-      } else if (value != this.identifyCode) {
-        callback(new Error("验证码输入错误"));
       } else {
         callback();
       }
     };
-    var validatePass = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('请输入密码'))
+    let validatePass = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请输入密码"));
       } else {
-        if (this.registerForm.checkPassword !== '') {
-          this.$refs.registerForm.validateField('checkPassword')
+        if (this.registerForm.checkPassword !== "") {
+          this.$refs.registerForm.validateField("checkPassword");
         }
-        callback()
+        callback();
       }
-    }
-    var validatePass2 = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('请再次输入密码'))
+    };
+    let validatePass2 = (rule, value, callback) => {
+      if (value === "") {
+        callback(new Error("请再次输入密码"));
       } else if (value !== this.registerForm.password) {
-        callback(new Error('两次输入密码不一致!'))
+        callback(new Error("两次输入密码不一致!"));
       } else {
-        callback()
+        callback();
       }
-    }
+    };
+    let checkEmail = (rule, value, callback) => {
+      const mailReg = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/;
+      if (!value) {
+        return callback(new Error("邮箱不能为空"));
+      }
+      setTimeout(() => {
+        if (mailReg.test(value)) {
+          callback();
+        } else {
+          callback(new Error("请输入正确的邮箱格式"));
+        }
+      }, 100);
+    };
+
     return {
+      isDisabled: false,
+      codeLoading: false,
+      info: "发送验证码",
       registerForm: {
-        name: '',
-        password: '',
-        checkPassword: '',
-         identifyCode: '',
+        email: "",
+        name: "",
+        password: "",
+        checkPassword: "",
+        identifyCode: ""
       },
-         // 图片验证码
-   identifyCode: '',
-   // 验证码规则
-   identifyCodes: '3456789ABCDEFGHGKMNPQRSTUVWXY',
       rules: {
         name: [
-          { required: true, message: '用户名不能为空', trigger: 'blur' },
-          { min: 4, message: '用户名长度不能少于4位', trigger: 'blur' }
+          { required: true, message: "用户名不能为空", trigger: "blur" },
+          { min: 2, message: "用户名长度不能少于4位", trigger: "blur" }
         ],
         password: [
-          { min: 6, message: '密码长度不能少于6位', trigger: 'blur' },
-          { required: true, validator: validatePass, trigger: 'blur' }
+          { min: 6, message: "密码长度不能少于6位", trigger: "blur" },
+          { required: true, validator: validatePass, trigger: "blur" }
         ],
         checkPassword: [
-          { required: true, validator: validatePass2, trigger: 'blur' }
+          { required: true, validator: validatePass2, trigger: "blur" }
         ],
-         identifyCode:[
-          { validator: identifyValidator, trigger: "blur"}
+        email: [{ required: true, validator: checkEmail, trigger: "blur" }],
+        identifyCode: [
+          { required: true, validator: identifyValidator, trigger: "blur" }
         ]
       }
-    }
+    };
   },
-  created() {
-   this.identifyCode = ''
-   this.makeCode(this.identifyCodes, 4)
-  },
+  created() {},
   methods: {
-    // 切换验证码
-     refreshCode() {
-   this.identifyCode = ''
-   this.makeCode(this.identifyCodes, 4)
-   console.log(1,this.identifyCode)
-     },
-  // 生成随机验证码
-  makeCode(o, l) {
-    for (let i = 0; i<l; i++) {
-      let randomIndex = Math.floor(Math.random() * (o.length - 0) + 0)
-      console.log(randomIndex)
-      this.identifyCode = this.identifyCode+this.identifyCodes[randomIndex]
-    }
-  },
+    sendVerifyCode() {
+      this.registerForm.identifyCode = "";
+      this.codeLoading = true;
+      userApi
+        .sendVerifyCode({ email: this.registerForm.email })
+        .then(res => {
+          this.codeLoading = false;
+          this.isDisabled = true;
+          let time = 60;
+          let timer = setInterval(() => {
+            this.info = `${time--} S`;
+            if (this.info <= 0) {
+              this.info = "发送验证码";
+              this.isDisabled = false;
+              clearInterval(timer);
+            }
+          }, 1000);
+        })
+        .finally(() => {
+          this.codeLoading = false;
+        });
+    },
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          const { name, password } = this.registerForm
-          userApi.register({
-            name,
-            password: md5(password)
-          }).then(res => {
-            this.$message1000('注册成功')
-            this.$router.push('/login')
-          })
+          const { name, password, email, identifyCode } = this.registerForm;
+          userApi
+            .register({
+              name,
+              password: md5(password),
+              email,
+              code: identifyCode
+            })
+            .then(res => {
+              this.$message1000("注册成功");
+              this.$router.push("/login");
+            });
         } else {
-          console.log('registerForm error submit!!')
-          return false
+          console.log("registerForm error submit!!");
+          return false;
         }
-      })
+      });
     }
   }
-}
+};
 </script>
 
 <style scoped>
@@ -184,7 +235,7 @@ body {
   justify-content: center;
 }
 .box-card {
-  width: 23rem;
+  width: 30rem;
   margin: 5% auto;
 }
 @media only screen and (max-width: 796px) {

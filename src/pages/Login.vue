@@ -80,10 +80,13 @@
             <el-button
               type="primary"
               :loading="submitLoading"
+              style="width:30%;"
               @click="submit('loginForm')"
               >登录</el-button
             >
-            <el-button @click="$router.push('/register')">注册</el-button>
+            <el-button @click="$router.push('/register')" style="width:30%;"
+              >注册</el-button
+            >
           </el-col>
         </el-row>
       </div>
