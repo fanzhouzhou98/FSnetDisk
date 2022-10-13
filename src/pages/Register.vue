@@ -188,8 +188,8 @@ export default {
           let time = 60;
           let timer = setInterval(() => {
             this.info = `${time--} S`;
-            if (this.info <= 0) {
-              this.time = "发送验证码";
+            if (time <= 0) {
+              this.info = "发送验证码";
               this.isDisabled = false;
               clearInterval(timer);
             }
