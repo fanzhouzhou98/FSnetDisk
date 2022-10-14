@@ -186,6 +186,7 @@ export default {
               this.submitLoading = false;
             });
         } else {
+          this.this.makeCode(this.identifyCodes, 4);
           console.log("error submit!!");
           this.submitLoading = false;
           return false;
