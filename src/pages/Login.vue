@@ -155,7 +155,6 @@ export default {
     refreshCode() {
       this.identifyCode = "";
       this.makeCode(this.identifyCodes, 4);
-      console.log(1, this.identifyCode);
     },
     // 生成随机验证码
     makeCode(o, l) {
