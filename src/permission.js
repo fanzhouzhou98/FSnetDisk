@@ -12,7 +12,6 @@ router.beforeEach(async (to, from, next) => {
   NProgress.start()
   setTimeout(() => {
     const hasToken = store.getters.token
-    console.log(hasToken)
     if (to.meta.title) {
       document.title = to.meta.title
     }

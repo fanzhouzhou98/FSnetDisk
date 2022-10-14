@@ -28,7 +28,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="8">
-          <el-form-item prop="name" label="日期">
+          <el-form-item prop="dateArr" label="日期">
             <el-date-picker
               v-model="dateArr"
               type="daterange"
@@ -119,11 +119,6 @@
         </div>
       </div>
     </el-dialog>
-
-    <!-- 文件搜索框 -->
-    <!-- <el-row v-if="openSearch" type="flex" class="row-bg">
-      <el-input v-model="searchFileName" placeholder="请输入搜索的文件名" prefix-icon="el-icon-search" />
-    </el-row> -->
     <div v-loading="loading" class="wait" style="height:calc(100% - 30%);">
       <div class="displayContent">
         <el-table :data="filterUserFile" style="width: 100%" border>
@@ -189,18 +184,18 @@
             </template>
           </el-table-column>
         </el-table>
+        <el-pagination
+          style="float:right;margin-top:20px"
+          @current-change="handleCurrentChange"
+          :current-page.sync="current"
+          :page-size="size"
+          background
+          layout="total,  prev, pager, next"
+          :total="count"
+        >
+        </el-pagination>
       </div>
     </div>
-    <el-pagination
-      style="float:right;margin-top:20px"
-      @current-change="handleCurrentChange"
-      :current-page.sync="current"
-      :page-size="size"
-      background
-      layout="total,  prev, pager, next"
-      :total="count"
-    >
-    </el-pagination>
   </el-main>
 </template>
 

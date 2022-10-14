@@ -248,7 +248,6 @@ export default {
       userApi.getUserInfoById().then(res => {
         this.userInfos = res;
         this.userNameFrom.name = res.name;
-        console.log(this.userInfos);
       });
     },
     resetPassword() {
@@ -265,7 +264,6 @@ export default {
           userApi
             .resetPassword(params)
             .then(res => {
-              console.log(res);
               if (res) {
                 this.$message1000("密码已修改");
                 this.$store.commit("quitUserInfo");
