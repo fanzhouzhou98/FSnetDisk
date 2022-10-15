@@ -171,7 +171,7 @@ export default {
     return {
       userInfos: {},
       isLoading: false,
-      activeIndex: "index",
+      activeIndex: "",
       visible: false,
       loginForm: {},
       resetPasswordFrom: {
@@ -209,8 +209,10 @@ export default {
     }
   },
   mounted() {
-    const route = this.$route.path.split("/")[2];
-    this.handleSelect(route);
+    const route = this.$route.path.split("/")[1];
+    this.$nextTick(() => {
+      this.handleSelect(route);
+    });
   },
   created() {
     this.getUserInfo();

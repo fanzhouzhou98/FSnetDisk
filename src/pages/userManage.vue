@@ -37,7 +37,7 @@
               {{ scope.row.files.length }}
             </template>
           </el-table-column>
-          <el-table-column prop="email" label="Email" />
+          <el-table-column prop="email" label="Email" align="center" />
           <el-table-column
             prop="createdAt"
             sortable
@@ -51,6 +51,7 @@
                 icon="el-icon-delete"
                 type="danger"
                 size="mini"
+                :disabled="scope.row.role == 'admin'"
                 @click="deleteShare(scope.row)"
                 >删除
               </el-button>
