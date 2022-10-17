@@ -17,10 +17,15 @@
         </el-form-item>
       </el-form>
       <div class="displayContent">
-        <el-table :data="userList" style="width: 100%"  border>
+        <el-table :data="userList" style="width: 100%" border>
           <el-table-column prop="id" label="用户ID" />
-          <el-table-column prop="name" label="用户名"  align="center" show-overflow-tooltip />
-          <el-table-column prop="role" label="用户类型"  align="center">
+          <el-table-column
+            prop="name"
+            label="用户名"
+            align="center"
+            show-overflow-tooltip
+          />
+          <el-table-column prop="role" label="用户类型" align="center">
             <template slot-scope="scope">
               <span>{{
                 scope.row.role == "admin" ? "管理员" : "普通用户"
@@ -32,19 +37,21 @@
               {{ scope.row.files.length }}
             </template>
           </el-table-column>
+          <el-table-column prop="email" label="Email" align="center" />
           <el-table-column
             prop="createdAt"
             sortable
             label="注册时间"
-             align="center"
+            align="center"
             width="180"
           />
-          <el-table-column label="操作"  align="center">
+          <el-table-column label="操作" align="center">
             <template slot-scope="scope">
               <el-button
                 icon="el-icon-delete"
                 type="danger"
                 size="mini"
+                :disabled="scope.row.role == 'admin'"
                 @click="deleteShare(scope.row)"
                 >删除
               </el-button>
@@ -136,5 +143,4 @@ export default {
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
