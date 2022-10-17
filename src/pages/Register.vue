@@ -100,6 +100,7 @@
 import SIdentify from "../component/identify.vue";
 import userApi from "../api/user";
 import md5 from "md5";
+import { Message } from "element-ui";
 export default {
   components: { SIdentify },
   name: "Register",
@@ -177,6 +178,14 @@ export default {
   created() {},
   methods: {
     sendVerifyCode() {
+      if (!this.registerForm.email) {
+        Message({
+          message: "请填写你的邮箱",
+          type: "error",
+          duration: 1.5 * 1000
+        });
+        return false;
+      }
       this.registerForm.identifyCode = "";
       this.codeLoading = true;
       userApi
